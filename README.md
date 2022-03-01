@@ -19,7 +19,7 @@ A partir de una entrada .Wav, el sistema debe identificar si se trata de un suje
 
 ## Notas
 
-- No emplear DataSet previamente procesados o limpiados. 
+- No emplear DataSet previamente procesados o limpiados.  
 - Eviten trabajar con el OpenCV aquellos equipos que tengan que procesar imagenes. Debe utilizar skimage
 - Eviten utilizar DeepLearning. En un segunda etapa de su proyecto, podrán incluirlo para efectos de comparacion. Utilicen el esquema clásico (obtener datos, extraer caracteristicas, entrenar y probar)
 - Los conjuntos de datos deben ser armados por los integrantes de los equipos. Imágenes capturadas, audios tomados, documentos descargados, etc. (por lo menos el 30%) y otra parte puede ser obtenida de muestras descargas de internet o de otras fuentes. 
@@ -32,4 +32,7 @@ A partir de una entrada .Wav, el sistema debe identificar si se trata de un suje
 [Voice Gender Detection](voice_gender_detection)  
 [Identifying the Gender of a Voice using Machine Learning](http://www.primaryobjects.com/2016/06/22/identifying-the-gender-of-a-voice-using-machine-learning/)  
 [Voice Gender](https://github.com/primaryobjects/voice-gender)  
+[Feature extraction and Machine Learning Classifiers for Male/Female Voice recognition](https://vitalv.github.io/projects/voice-gender-classifier.html)  
+[Voice Gender Detection using GMMs : A Python Primer](https://appliedmachinelearning.blog/2017/06/14/voice-gender-detection-using-gmms-a-python-primer/)  
+[Smart AI Robot With Gender Recognition Using Voice](https://www.electronicsforu.com/electronics-projects/ardiuno-diy/smart-ai-robot-with-gender-recognition-using-voice)  
 
