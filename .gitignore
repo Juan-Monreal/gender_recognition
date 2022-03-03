@@ -1,7 +1,5 @@
 #Pycharm directory
 .idea/
-#.wav files
-data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
