@@ -10,43 +10,44 @@ from sklearn import preprocessing
 import FeaturesExtractor
 import warnings
 
-warnings.filterwarnings("ignore")
+
+def loadFeatures(files):
+    extractor = FeaturesExtractor.Extractor()
+    features = np.asarray(())
+    for file in files:
+        feature = extractor.extractFeatures(file)
+        if features.size == 0:
+            features = feature
+        else:
+            features = np.vstack((features, feature))
+    return features
 
 
-# ignore WARNING:root:frame length (2400) is greater than FFT size (512), frame will be truncated. Increase NFFT to avoid.
+def save(destination, model):
+    pickle.dump(model, open(destination + ".gmm", 'wb'))
+    print("Model Saved")
 
-# def get_features(rate, audio):
-#     """
-#     Extract voice features including the Mel Frequency Cepstral Coefficient (MFCC)
-#     :param rate: audio signal
-#     :param audio: the samplerate of the signal
-#     :return: Extracted features
-#     """
-#     # https://python-speech-features.readthedocs.io/en/latest/index.html#functions-provided-in-python-speech-features-module
-#     features = mfcc.mfcc(audio, rate, winlen=0.025, winstep=0.01, numcep=13, appendEnergy=False)
-#     features = preprocessing.scale(features)
-#     return features
 
-extractor = FeaturesExtractor.Extractor()
+def trainModel(features, destination):
+    model = GaussianMixture(n_components=8, max_iter=200, covariance_type='diag', n_init=3)
+    model.fit(features)
+    save(destination, model)
 
-source = "data/females/"
-# source = "data/males/"
-destination = "data/saved/"
 
-files = [os.path.join(source, f) for f in os.listdir(source) if f.endswith('.wav')]
+def main():
+    labels = ['males', 'females']
+    source = "data/"
+    destination = "data/saved/"
+    for label in labels:
+        actualSource = source + label + "/"
+        actualDestination = destination + label
+        print("Loading {} files ".format(label))
+        files = [os.path.join(actualSource, f) for f in os.listdir(actualSource) if f.endswith('.wav')]
+        features = loadFeatures(files)
+        trainModel(features, actualDestination)
+        print("Done {} model".format(label))
 
-features = np.asarray(())
-print("Loading Files")
-for file in files:
-    feature = extractor.extractFeatures(file)
-    if features.size == 0:
-        features = feature
-    else:
-        features = np.vstack((features, feature))
-model = GaussianMixture(n_components=8, max_iter=200, covariance_type='diag', n_init=3)
-model.fit(features)
-# pickleFile = "male.gmm"
-pickleFile = "female.gmm"
 
-pickle.dump(model, open(destination + pickleFile, 'wb'))
-print("done")
+if __name__ == "__main__":
+    warnings.filterwarnings('ignore')
+    main()

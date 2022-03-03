@@ -30,6 +30,6 @@ class Extractor:
             appendEnergy=True)
         mfccFeatures = preprocessing.scale(mfccFeatures)  # Compute delta features from a feature vector sequence.
         deltas = delta(mfccFeatures, 2)  # Compute delta features from a feature vector sequence.
-        double_deltas = delta(deltas, 2)
-        combined = np.hstack((mfccFeatures, deltas, double_deltas))
+        doubleDeltas = delta(deltas, 2)
+        combined = np.hstack((mfccFeatures, deltas, doubleDeltas))
         return combined
