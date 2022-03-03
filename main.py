@@ -12,6 +12,12 @@ import warnings
 
 
 def loadFeatures(files):
+    """
+    Go iterative for each file(.wav) in loaded files (*.wav) and
+    extract the MFCC Features using the Extractor() class in FeaturesExtractor
+    :param files: List of each File to be processed
+    :return: All features for each audio in a numpy matrix
+    """
     extractor = FeaturesExtractor.Extractor()
     features = np.asarray(())
     for file in files:
@@ -24,11 +30,26 @@ def loadFeatures(files):
 
 
 def save(destination, model):
+    """
+    Serializes the trained model using the Pickle Library
+    The pickle module implements binary protocols for serializing and de-serializing a Python object structure.
+    “Pickling” is the process whereby a Python object hierarchy is converted into a byte stream,
+    and “unpickling” is the inverse operation
+    :param destination: path to save the model
+    :param model:  trained model to be saved
+    """
     pickle.dump(model, open(destination + ".gmm", 'wb'))
     print("Model Saved")
 
 
 def trainModel(features, destination):
+    """
+    Train the current gender model using Gaussian Mixture.
+    Gaussian Mixture will try to learn their distribution, which will be representative
+    of the gender.
+    :param features: mfcc features for each audio
+    :param destination: path to save the model
+    """
     model = GaussianMixture(n_components=8, max_iter=200, covariance_type='diag', n_init=3)
     model.fit(features)
     save(destination, model)
