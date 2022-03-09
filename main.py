@@ -9,6 +9,7 @@ from python_speech_features import delta
 from sklearn import preprocessing
 import FeaturesExtractor
 import warnings
+import _pickle as cPickle
 
 
 def loadFeatures(files):
@@ -52,6 +53,7 @@ def trainModel(features, destination):
     """
     model = GaussianMixture(n_components=8, max_iter=200, covariance_type='diag', n_init=3)
     model.fit(features)
+
     save(destination, model)
 
 
@@ -66,7 +68,29 @@ def main():
         files = [os.path.join(actualSource, f) for f in os.listdir(actualSource) if f.endswith('.wav')]
         features = loadFeatures(files)
         trainModel(features, actualDestination)
+        a = trainModel(features, actualDestination)
         print("Done {} model".format(label))
+
+
+    gmm_files = [os.path.join(destination,fname) for fname in 
+              os.listdir(destination) if fname.endswith('.gmm')]
+
+    models = [cPickle.load(open(fname,'rb')) for fname in gmm_files]
+    genders   = [fname.split("\\")[-1].split(".gmm")[0] for fname in gmm_files]
+    # print(gmm_files)
+    # print(models)
+    for f in files:
+         print(f.split("\\")[-1])
+         sr, audio =read(f)
+         scores = None
+         log = np.zeros(len(models))
+         for x in range(len(models)):
+            gmm = models[x]
+            scores = np.array(gmm.score(features))
+            log[x] = scores.sum()
+
+    winner = np.argmax(log)
+    print("Ganador: ", genders[winner], "Mujeres: ", log[0], "Hombres: ", log[1],"\n" )
 
 
 if __name__ == "__main__":
