@@ -2,10 +2,13 @@ import numpy as np
 from numpy import savetxt
 import os
 import pickle
-from scipy.io.wavfile import read
+from sklearn.metrics import confusion_matrix
 from sklearn.mixture import GaussianMixture
 from FeaturesExtractor import Extractor
+import matplotlib.pyplot as plt
+import seaborn as sns
 import warnings
+
 warnings.filterwarnings("ignore")
 
 
@@ -98,7 +101,7 @@ def testModel(trainedModels, source, labels):
     files = getAllFiles('.wav', source + 'males')
     extractor = Extractor()
     print(genders)
-    winners = list()
+    winners = []
     for file in files:
         print(file.split("\\")[-1])
         features = extractor.extractFeatures(file)
@@ -109,9 +112,29 @@ def testModel(trainedModels, source, labels):
             likeLihood[x] = scores.sum()
 
         winner = np.argmax(likeLihood)
-        #genders[winner].split('/')[2]
+        # genders[winner].split('/')[2]
         winners.append(genders[winner].split('/')[2])
-        # print("Ganador: ", genders[winner].split('/')[2], "Mujeres: ", likeLihood[0], "Hombres: ", likeLihood[1], "\n")
+        print("Ganador: ", genders[winner].split('/')[2], "Mujeres: ", likeLihood[0], "Hombres: ", likeLihood[1], "\n")
+    # TODO ADD A LIST FOR TESTING MALES AND FEMALES INTO ONE LIST FOR TARGETS AND
+    #  ANOTHER LIST FOR THE WINNERS (PREDICTED)
+    targets = ('males',) * 19
+    drawConfusionMatrix(targets, winners)
+
+
+def drawConfusionMatrix(test, prediction):
+    # print("TEST")
+    # print(test)
+    # print("prediction")
+    # print(prediction)
+    confusion = confusion_matrix(test, prediction)
+    # print("confusion")
+    ax = sns.heatmap(confusion / np.sum(confusion), annot=True, fmt='.2%', cmap='Blues')
+    ax.set_title('Confusion Matrix')
+    ax.set_xlabel('\nPredicted Values')
+    ax.set_ylabel('Actual Values')
+    ax.xaxis.set_ticklabels(['False', 'True'])
+    ax.yaxis.set_ticklabels(['False', 'True'])
+    plt.show()
 
 
 def main():
@@ -120,10 +143,9 @@ def main():
     destination = "data/saves/"
     trainedModels = getAllFiles('.gmm', destination)
     if listIsEmpty(trainedModels):
-        print("if")
         initializeModel(labels, source, destination)
         trainedModels = getAllFiles('.gmm', destination)
-    testModel(trainedModels, source, labels)
+    testModel(trainedModels, "data/testingData/", labels)
 
 
 if __name__ == "__main__":
