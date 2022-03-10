@@ -98,42 +98,48 @@ def initializeModel(labels, source, destination):
 def testModel(trainedModels, source, labels):
     models = [pickle.load(open(file, 'rb')) for file in trainedModels]
     genders = [file.split("\\")[-1].split(".gmm")[0] for file in trainedModels]
-    files = getAllFiles('.wav', source + 'males')
     extractor = Extractor()
     print(genders)
-    winners = []
-    for file in files:
-        print(file.split("\\")[-1])
-        features = extractor.extractFeatures(file)
-        likeLihood = np.zeros(len(models))
-        for x in range(len(models)):
-            model = models[x]
-            scores = np.array(model.score(features))
-            likeLihood[x] = scores.sum()
-
-        winner = np.argmax(likeLihood)
-        # genders[winner].split('/')[2]
-        winners.append(genders[winner].split('/')[2])
-        print("Ganador: ", genders[winner].split('/')[2], "Mujeres: ", likeLihood[0], "Hombres: ", likeLihood[1], "\n")
+    winners = [] #prediction
+    n = []
+    for label in labels:
+        actualSource = source + label + "/"
+        print(actualSource, 'Actual source')
+        files = getAllFiles('.wav', actualSource)
+        n.append(len(files))
+        for file in files:
+            print(file.split("\\")[-1])
+            features = extractor.extractFeatures(file)
+            likeLihood = np.zeros(len(models))
+            for x in range(len(models)):
+                model = models[x]
+                scores = np.array(model.score(features))
+                likeLihood[x] = scores.sum()
+            winner = np.argmax(likeLihood)
+            # genders[winner].split('/')[2]
+            winners.append(genders[winner].split('/')[2])
+            print("Ganador: ", genders[winner].split('/')[2], "Mujeres: ", likeLihood[0], "Hombres: ", likeLihood[1], "\n")
     # TODO ADD A LIST FOR TESTING MALES AND FEMALES INTO ONE LIST FOR TARGETS AND
     #  ANOTHER LIST FOR THE WINNERS (PREDICTED)
-    targets = ('males',) * 19
+    targets = ['males'] * n[0]
+    targets.extend(['females'] * n[1])
     drawConfusionMatrix(targets, winners)
 
 
 def drawConfusionMatrix(test, prediction):
-    # print("TEST")
-    # print(test)
-    # print("prediction")
-    # print(prediction)
+    print("TEST", len(test))
+    print(test)
+    print("prediction", len(prediction))
+    print(prediction)
     confusion = confusion_matrix(test, prediction)
     # print("confusion")
     ax = sns.heatmap(confusion / np.sum(confusion), annot=True, fmt='.2%', cmap='Blues')
     ax.set_title('Confusion Matrix')
     ax.set_xlabel('\nPredicted Values')
     ax.set_ylabel('Actual Values')
-    ax.xaxis.set_ticklabels(['False', 'True'])
-    ax.yaxis.set_ticklabels(['False', 'True'])
+    ax.xaxis.set_ticklabels(['males', 'females'])
+    ax.yaxis.set_ticklabels(['males', 'females'])
+    ax.figure.savefig("data/saves/confusionMatrix.png", dpi=300)
     plt.show()
 
 
