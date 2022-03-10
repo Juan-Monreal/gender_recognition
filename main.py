@@ -1,15 +1,12 @@
 import numpy as np
-import pandas as pd
+from numpy import savetxt
 import os
 import pickle
 from scipy.io.wavfile import read
 from sklearn.mixture import GaussianMixture
-import python_speech_features as mfcc
-from python_speech_features import delta
-from sklearn import preprocessing
-import FeaturesExtractor
+from FeaturesExtractor import Extractor
 import warnings
-import _pickle as cPickle
+warnings.filterwarnings("ignore")
 
 
 def loadFeatures(files):
@@ -19,7 +16,7 @@ def loadFeatures(files):
     :param files: List of each File to be processed
     :return: All features for each audio in a numpy matrix
     """
-    extractor = FeaturesExtractor.Extractor()
+    extractor = Extractor()
     features = np.asarray(())
     for file in files:
         feature = extractor.extractFeatures(file)
@@ -57,40 +54,76 @@ def trainModel(features, destination):
     save(destination, model)
 
 
-def main():
-    labels = ['males', 'females']
-    source = "data/"
-    destination = "data/saved/"
+def listIsEmpty(files) -> bool:
+    """
+    Chec if a given list is empty or not
+    :param files: list to be checked
+    :return: True if list is empty
+            Else If is not empty
+    """
+    if files is None:
+        return True
+    if not files:
+        return True
+    return False
+
+
+def getAllFiles(extension, path):
+    """
+    Get all the files with the same extension
+    :param extension: extension file to be obtained
+    :param path: directory/path to check
+    :return: List with the path of files
+    """
+    return [os.path.join(path, file)
+            for file in os.listdir(path)
+            if file.endswith(extension)]
+
+
+def initializeModel(labels, source, destination):
     for label in labels:
         actualSource = source + label + "/"
         actualDestination = destination + label
         print("Loading {} files ".format(label))
-        files = [os.path.join(actualSource, f) for f in os.listdir(actualSource) if f.endswith('.wav')]
+        files = getAllFiles('.wav', actualSource)
         features = loadFeatures(files)
+        savetxt(destination + label + '_data.csv', features, delimiter=',')
         trainModel(features, actualDestination)
-        a = trainModel(features, actualDestination)
-        print("Done {} model".format(label))
+        print("{} model done".format(label))
 
 
-    gmm_files = [os.path.join(destination,fname) for fname in 
-              os.listdir(destination) if fname.endswith('.gmm')]
+def testModel(trainedModels, source, labels):
+    models = [pickle.load(open(file, 'rb')) for file in trainedModels]
+    genders = [file.split("\\")[-1].split(".gmm")[0] for file in trainedModels]
+    files = getAllFiles('.wav', source + 'males')
+    extractor = Extractor()
+    print(genders)
+    winners = list()
+    for file in files:
+        print(file.split("\\")[-1])
+        features = extractor.extractFeatures(file)
+        likeLihood = np.zeros(len(models))
+        for x in range(len(models)):
+            model = models[x]
+            scores = np.array(model.score(features))
+            likeLihood[x] = scores.sum()
 
-    models = [cPickle.load(open(fname,'rb')) for fname in gmm_files]
-    genders   = [fname.split("\\")[-1].split(".gmm")[0] for fname in gmm_files]
-    # print(gmm_files)
-    # print(models)
-    for f in files:
-         print(f.split("\\")[-1])
-         sr, audio =read(f)
-         scores = None
-         log = np.zeros(len(models))
-         for x in range(len(models)):
-            gmm = models[x]
-            scores = np.array(gmm.score(features))
-            log[x] = scores.sum()
+        winner = np.argmax(likeLihood)
+        #genders[winner].split('/')[2]
+        winners.append(genders[winner].split('/')[2])
+        # print("Ganador: ", genders[winner].split('/')[2], "Mujeres: ", likeLihood[0], "Hombres: ", likeLihood[1], "\n")
 
-    winner = np.argmax(log)
-    print("Ganador: ", genders[winner], "Mujeres: ", log[0], "Hombres: ", log[1],"\n" )
+
+def main():
+    labels = ['males', 'females']
+    source = "data/trainingData/"
+    destination = "data/saves/"
+    trainedModels = getAllFiles('.gmm', destination)
+    if listIsEmpty(trainedModels):
+        print("if")
+        initializeModel(labels, source, destination)
+        trainedModels = getAllFiles('.gmm', destination)
+    testModel(trainedModels, source, labels)
 
 
 if __name__ == "__main__":
