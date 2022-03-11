@@ -119,8 +119,6 @@ def testModel(trainedModels, source, labels):
             # genders[winner].split('/')[2]
             winners.append(genders[winner].split('/')[2])
             print("Ganador: ", genders[winner].split('/')[2], "Mujeres: ", likeLihood[0], "Hombres: ", likeLihood[1], "\n")
-    # TODO ADD A LIST FOR TESTING MALES AND FEMALES INTO ONE LIST FOR TARGETS AND
-    #  ANOTHER LIST FOR THE WINNERS (PREDICTED)
     targets = ['males'] * n[0]
     targets.extend(['females'] * n[1])
     drawConfusionMatrix(targets, winners)
@@ -132,13 +130,14 @@ def drawConfusionMatrix(test, prediction):
     print("prediction", len(prediction))
     print(prediction)
     confusion = confusion_matrix(test, prediction)
-    # print("confusion")
-    ax = sns.heatmap(confusion / np.sum(confusion), annot=True, fmt='.2%', cmap='Blues')
+    print("confusion")
+    print(confusion)
+    ax = sns.heatmap(confusion, annot=True, cmap='Blues')
     ax.set_title('Confusion Matrix')
     ax.set_xlabel('\nPredicted Values')
     ax.set_ylabel('Actual Values')
-    ax.xaxis.set_ticklabels(['males', 'females'])
-    ax.yaxis.set_ticklabels(['males', 'females'])
+    ax.xaxis.set_ticklabels(['females', 'males'])
+    ax.yaxis.set_ticklabels(['females', 'males'])
     ax.figure.savefig("data/saves/confusionMatrix.png", dpi=300)
     plt.show()
 
