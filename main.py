@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import warnings
 
-warnings.filterwarnings("ignore")
+warnings.filterwarnings("ignore")  # It is supposed to ignore all warnings, but sometimes it doesn't work.
 
 
 def loadFeatures(files):
@@ -59,7 +59,7 @@ def trainModel(features, destination):
 
 def listIsEmpty(files) -> bool:
     """
-    Chec if a given list is empty or not
+    Check if a given list is empty or not
     :param files: list to be checked
     :return: True if list is empty
             Else If is not empty
@@ -84,6 +84,12 @@ def getAllFiles(extension, path):
 
 
 def initializeModel(labels, source, destination):
+    """
+    Initialize the models with Training data using trianModel method
+    :param labels: list of string containing the genders
+    :param source: path to obtain the files
+    :param destination: path to save data
+    """
     for label in labels:
         actualSource = source + label + "/"
         actualDestination = destination + label
@@ -96,11 +102,20 @@ def initializeModel(labels, source, destination):
 
 
 def testModel(trainedModels, source, labels):
+    """
+    Get the trained Models for males and females.
+    Then obtain all the training data (.wav files).
+    Next we required the log likelihood scores for each one.
+    And select the best according to the trained model
+    :param trainedModels: list of paths with the current trained models (.gmm files)
+    :param source: path to obtain the files
+    :param labels: list of string containing the genders
+    """
     models = [pickle.load(open(file, 'rb')) for file in trainedModels]
     genders = [file.split("\\")[-1].split(".gmm")[0] for file in trainedModels]
     extractor = Extractor()
     print(genders)
-    winners = [] #prediction
+    winners = []  # prediction
     n = []
     for label in labels:
         actualSource = source + label + "/"
@@ -118,20 +133,28 @@ def testModel(trainedModels, source, labels):
             winner = np.argmax(likeLihood)
             # genders[winner].split('/')[2]
             winners.append(genders[winner].split('/')[2])
-            print("Ganador: ", genders[winner].split('/')[2], "Mujeres: ", likeLihood[0], "Hombres: ", likeLihood[1], "\n")
+            print("Ganador: ", genders[winner].split('/')[2], "Mujeres: ", likeLihood[0], "Hombres: ", likeLihood[1],
+                  "\n")
     targets = ['males'] * n[0]
     targets.extend(['females'] * n[1])
     drawConfusionMatrix(targets, winners)
 
 
 def drawConfusionMatrix(test, prediction):
+    """
+    Draw a confusion matrix using sklearn.metrics package.
+    The confusion_matrix() method will give you an array that depicts the
+    True Positives, False Positives, False Negatives, and True negatives.
+    Once we have the confusion matrix created, we use the heatmap() method available in the
+    seaborn library to plot the confusion matrix
+    :param test: list of label's correctly labeled
+    :param prediction: list of the label's predicted
+    """
     print("TEST", len(test))
     print(test)
     print("prediction", len(prediction))
     print(prediction)
     confusion = confusion_matrix(test, prediction)
-    print("confusion")
-    print(confusion)
     ax = sns.heatmap(confusion, annot=True, cmap='Blues')
     ax.set_title('Confusion Matrix')
     ax.set_xlabel('\nPredicted Values')
@@ -143,6 +166,11 @@ def drawConfusionMatrix(test, prediction):
 
 
 def main():
+    """
+    Main Function
+    Initialize the models if not are previously generated
+    Then goes to test the models with testing data
+    """
     labels = ['males', 'females']
     source = "data/trainingData/"
     destination = "data/saves/"
