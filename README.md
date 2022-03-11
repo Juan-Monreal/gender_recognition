@@ -1,8 +1,8 @@
 # Unidad 2. Equipo 06 Reconocimiento de Genero
 
 **iti-27798_equipo_06**  
-**Importante:** Descargar los archivos del drive [clic aquí](https://drive.google.com/drive/folders/1lK8Mc3R0SBxvK3n0pefXGvico-b2Y8EE?usp=sharing)  
-Enlace public para dataset estructurado: [clic aquí](https://drive.google.com/drive/folders/1lK8Mc3R0SBxvK3n0pefXGvico-b2Y8EE?usp=sharing)
+**Importante:** Descargar los archivos del drive de nuestros audios [clic aquí](https://drive.google.com/drive/folders/1lK8Mc3R0SBxvK3n0pefXGvico-b2Y8EE?usp=sharing)  
+**Enlace publico** para dataset completo y estructurado: [clic aquí](https://drive.google.com/drive/folders/1vqo5zBBoV-P_sTApDEffT0vAsQX7_K8t?usp=sharing)
 ## Requerimientos
 
 ```python
