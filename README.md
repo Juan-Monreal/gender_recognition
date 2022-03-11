@@ -1,7 +1,18 @@
 # Unidad 2. Equipo 06 Reconocimiento de Genero
 
 **iti-27798_equipo_06**  
-**Importante:** Descargar los archivos del drive [clic aquí](https://drive.google.com/drive/folders/1lK8Mc3R0SBxvK3n0pefXGvico-b2Y8EE?usp=sharing)
+**Importante:** Descargar los archivos del drive [clic aquí](https://drive.google.com/drive/folders/1lK8Mc3R0SBxvK3n0pefXGvico-b2Y8EE?usp=sharing)  
+Enlace public para dataset estructurado: [clic aquí](https://drive.google.com/drive/folders/1lK8Mc3R0SBxvK3n0pefXGvico-b2Y8EE?usp=sharing)
+## Requerimientos
+
+```python
+pip install seaborn
+pip install pickle
+pip install warnings
+pip install sklearn
+pip install numpy
+pip install matplotlib
+```
 
 ## Integrantes
 Equipo  6  Proyecto  6 Lenguaje:  Python  
