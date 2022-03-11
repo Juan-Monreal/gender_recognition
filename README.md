@@ -7,11 +7,12 @@
 
 ```python
 pip install seaborn
-pip install pickle
+#pip install pickle
 pip install warnings
 pip install sklearn
 pip install numpy
 pip install matplotlib
+pip install python_speech_features
 ```
 
 ## Integrantes
